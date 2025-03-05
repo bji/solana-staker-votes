@@ -8,7 +8,9 @@ function create_key_file ()
     if [ -z "$prefix" ]; then
         solana-keygen new --no-bip39-passphrase -s -o $filename
     else
-        solana-keygen grind --starts-with $prefix:1 -o $filename
+        solana-keygen grind --starts-with $prefix:1 | tee output
+        mv `grep "Wrote keypair" output | awk '{ print $4 }'` $filename
+        rm output
     fi
 }
 
@@ -70,7 +72,7 @@ echo "A token mint will be created from which vote tokens will be minted.  If yo
 echo "want this token mint to have a specific prefix, you can specify it here."
 echo "Such a prefix could help your voters identify your vote tokens, but is not"
 echo "necessary.  Keep in mind that the key takes exponentially longer to"
-echo "generate as the prefix length grows; prefixes more than 4 characters long"
+echo "generate as the prefix length grows; prefixes more than 3 characters long"
 echo "are not recommended.  If no prefix is provided, the token mint will be"
 echo "generated randomly."
 echo
@@ -83,7 +85,7 @@ echo "A system account will be created to receive Yes votes.  If you want this"
 echo "account to have a specific prefix, you can specify it here.  Such a prefix"
 echo "could help your voters identify the Yes vote account, but is not necessary."
 echo "Keep in mind that the key takes exponentially longer to generate as the"
-echo "prefix length grows; prefixes more than 4 characters long are not"
+echo "prefix length grows; prefixes more than 3 characters long are not"
 echo "recommended.  If no prefix is provided, the token account be generated"
 echo "randomly."
 echo
@@ -96,7 +98,7 @@ echo "A system account will be created to receive No votes.  If you want this"
 echo "account to have a specific prefix, you can specify it here.  Such a prefix"
 echo "could help your voters identify the No vote account, but is not necessary."
 echo "Keep in mind that the key takes exponentially longer to generate as the"
-echo "prefix length grows; prefixes more than 4 characters long are not"
+echo "prefix length grows; prefixes more than 3 characters long are not"
 echo "recommended.  If no prefix is provided, the account be generated"
 echo "randomly."
 echo
@@ -109,7 +111,7 @@ echo "A system account will be created to receive Abstain votes.  If you want"
 echo "this account to have a specific prefix, you can specify it here.  Such"
 echo "a prefix could help your voters identify the Abstain vote account, but"
 echo "is not necessary.  Keep in mind that the key takes exponentially longer"
-echo "to generate as the prefix length grows; prefixes more than 4 characters"
+echo "to generate as the prefix length grows; prefixes more than 3 characters"
 echo "long are not recommended.  If no prefix is provided, the account will"
 echo "be generated randomly."
 echo
