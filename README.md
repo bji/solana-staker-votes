@@ -11,6 +11,14 @@ A Yes, No, and Abstain system account will be created as the destination target 
 transferring vote tokens.  Vote tokens transferred to these addresses should be considered
 as votes for the corresponding option.
 
+# Note about costs:
+
+Creating the token mint and other associated accounts will require negligeable SOL on the
+order of 0.01.
+
+Each withdraw authority that will receive vote tokens will require one transaction and
+thus for a validator with 3,000 unique stakers, the cost for this will total to 0.015 SOL.
+
 # Prerequisites
 
 You must have the solana command line installed.
