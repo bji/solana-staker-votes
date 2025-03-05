@@ -68,9 +68,9 @@ You must have the solana command line installed.
    can be cast:
 
    ```
-   $ spl-token -u $RPC_URL freeze --mint-address token_mint.json yes_vote_account.json
-   $ spl-token -u $RPC_URL freeze --mint-address token_mint.json no_vote_account.json
-   $ spl-token -u $RPC_URL freeze --mint-address token_mint.json abstain_vote_account.json
+   $ spl-token -u $RPC_URL freeze --fee-payer $FEE_PAYER --freeze-authority $FEE_PAYER --mint-address token_mint.json `spl-token -u $RPC_URL address --token token_mint.json --owner yes_vote_account.json --verbose | grep "^Associated" | awk '{ print $4 }'`
+   $ spl-token -u $RPC_URL freeze --fee-payer $FEE_PAYER --freeze-authority $FEE_PAYER --mint-address token_mint.json `spl-token -u $RPC_URL address --token token_mint.json --owner no_vote_account.json --verbose | grep "^Associated" | awk '{ print $4 }'`
+   $ spl-token -u $RPC_URL freeze --fee-payer $FEE_PAYER --freeze-authority $FEE_PAYER --mint-address token_mint.json `spl-token -u $RPC_URL address --token token_mint.json --owner abstain_vote_account.json --verbose | grep "^Associated" | awk '{ print $4 }'`
    ```
 
    Then you can check the token balances of those accounts to see the final vote tallies.
