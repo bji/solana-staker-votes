@@ -67,5 +67,8 @@ You must have the solana command line installed.
 
    Then you can check the token balances of those accounts to see the final vote tallies.
 
-   Keep in mind that the total vote tokens distributed is available by looking at the
-   token mint in a block explorer and checking the "Current Supply".
+   If you need to know the total supply of vote tokens that were issued, try this command:
+
+   ```
+   $ grep -v "recipient,amount" stakes.csv | awk -F "," '{ sum += $2 } END { print sum }'
+   ```
