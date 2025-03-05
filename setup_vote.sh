@@ -84,7 +84,7 @@ echo "account to have a specific prefix, you can specify it here.  Such a prefix
 echo "could help your voters identify the Yes vote account, but is not necessary."
 echo "Keep in mind that the key takes exponentially longer to generate as the"
 echo "prefix length grows; prefixes more than 4 characters long are not"
-echo "recommended.  If no prefix is provided, the token mint will be generated"
+echo "recommended.  If no prefix is provided, the token account be generated"
 echo "randomly."
 echo
 echo -n "Yes vote account prefix [none]? "
@@ -97,7 +97,7 @@ echo "account to have a specific prefix, you can specify it here.  Such a prefix
 echo "could help your voters identify the No vote account, but is not necessary."
 echo "Keep in mind that the key takes exponentially longer to generate as the"
 echo "prefix length grows; prefixes more than 4 characters long are not"
-echo "recommended.  If no prefix is provided, the token mint will be generated"
+echo "recommended.  If no prefix is provided, the account be generated"
 echo "randomly."
 echo
 echo -n "No vote account prefix [none]? "
@@ -110,7 +110,7 @@ echo "this account to have a specific prefix, you can specify it here.  Such"
 echo "a prefix could help your voters identify the Abstain vote account, but"
 echo "is not necessary.  Keep in mind that the key takes exponentially longer"
 echo "to generate as the prefix length grows; prefixes more than 4 characters"
-echo "long are not recommended.  If no prefix is provided, the token mint will"
+echo "long are not recommended.  If no prefix is provided, the account will"
 echo "be generated randomly."
 echo
 echo -n "Abstain vote account prefix [none]? "
