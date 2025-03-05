@@ -11,6 +11,10 @@ A Yes, No, and Abstain system account will be created as the destination target 
 transferring vote tokens.  Vote tokens transferred to these addresses should be considered
 as votes for the corresponding option.
 
+# Prerequisites
+
+You must have the solana command line installed.
+
 # Usage
 
 1. Determine what it is you want your stakers to vote on, and how you want to communicate to
