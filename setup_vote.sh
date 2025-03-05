@@ -148,7 +148,7 @@ solana -u $rpc_url -k $fee_payer transfer abstain_vote_account.json 0.001 --allo
 echo "A token mint will now be created for your vote tokens."
 echo
 
-spl-token create-token -u $rpc_url --fee-payer $fee_payer --mint-authority $fee_payer --decimals 0 token_mint.json
+spl-token create-token -u $rpc_url --fee-payer $fee_payer --mint-authority $fee_payer --decimals 0 --enable-freeze token_mint.json
 
 echo
 echo "Capturing stakers and their stake weights ..."
@@ -191,11 +191,6 @@ done | sort >> stakes.csv
 TOTAL_LAMPORTS=`grep -v "recipient,amount" stakes.csv | awk -F "," '{ sum += $2 } END { print sum }'`
 
 echo
-echo "Minting $TOTAL_LAMPORTS vote tokens"
-
-spl-token create-account --owner $fee_payer --fee-payer $fee_payer -u $rpc_url ./token_mint.json
-
-echo
 echo "Creating associated token accounts for the vote tally accounts"
 echo
 
@@ -203,6 +198,10 @@ spl-token create-account --owner ./yes_vote_account.json --fee-payer $fee_payer 
 spl-token create-account --owner ./no_vote_account.json --fee-payer $fee_payer -u $rpc_url ./token_mint.json
 spl-token create-account --owner ./abstain_vote_account.json --fee-payer $fee_payer -u $rpc_url ./token_mint.json
 
+echo
+echo "Minting $TOTAL_LAMPORTS vote tokens"
+
+spl-token create-account --owner $fee_payer --fee-payer $fee_payer -u $rpc_url ./token_mint.json
 # Not sure why, but have to wait for tx to finalize here
 SIGNATURE=`spl-token mint -u $rpc_url --fee-payer $fee_payer --mint-authority $fee_payer --recipient-owner $fee_payer ./token_mint.json $TOTAL_LAMPORTS | grep Signature | awk '{ print $2 }'`
 while true; do
