@@ -29,9 +29,11 @@ as votes for the corresponding option.
    working directory is this repo's directory, i.e. the directory containing this README.md
    file):
 
+   ```
    $ mkdir vote-1234
    $ cd vote-1234
    $ ../setup_vote.sh
+   ```
 
    The setup_vote.sh script will step you through the process.  It might not be a bad idea
    to do a test run on devnet or testnet (you can choose which cluster you use when the
@@ -46,14 +48,18 @@ as votes for the corresponding option.
 
 5. If you want to see a tally of the votes at any time, you can use commands like:
 
+   ```
    $ spl-token -u $RPC_URL balance --owner yes_vote_account.json token_mint.json
+   ```
 
 6. When the vote is over, you can freeze the vote tally accounts so that no more votes
    can be cast:
 
+   ```
    $ spl-token -u $RPC_URL freeze --mint-address token_mint.json yes_vote_account.json
    $ spl-token -u $RPC_URL freeze --mint-address token_mint.json no_vote_account.json
    $ spl-token -u $RPC_URL freeze --mint-address token_mint.json abstain_vote_account.json
+   ```
 
    Then you can check the token balances of those accounts to see the final vote tallies.
 
