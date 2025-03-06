@@ -31,40 +31,66 @@ You must have the solana command line installed.
    a description of the vote, its purpose, how it will work, and when it will start and end,
    and make this information available to your stakers.
 
-2. Wait until it is the epoch in which you want the vote to start. You have to wait until that
-   epoch because the set of active stakers will be determined at the start of that epoch.
-   If you want to avoid stake entering or leaving in order to influence your vote, you can
-   set up the vote before announcing it.
-
-3. Run the setup_vote.sh script to actually set up the vote.  Because it is best run from
-   an empty directory, you might consider doing something like this (assuming your current
-   working directory is this repo's directory, i.e. the directory containing this README.md
-   file):
-
+2. Set up the token mint and vote tally accounts.  Because it is best run from an empty
+   directory, you might consider doing something like this (assuming your current working
+   directory is this repo's directory, i.e. the directory containing this README.md file):
+   
    ```
    $ mkdir vote-1234
    $ cd vote-1234
    $ ../setup_vote.sh
    ```
-
-   The setup_vote.sh script will step you through the process.  It might not be a bad idea
-   to do a test run on devnet or testnet (you can choose which cluster you use when the
-   script prompts you for the RPC URL), just so you can understand the process.
-
+   
    BE SURE TO SAVE ALL THE FILES IN THIS DIRECTORY.  These include keypair files that you
    must retain in order to be able to complete tallying the votes.
 
-4. Alert your voters that the vote has started.  Make sure they understand how to find their
+   At this point the vote token mint and vote tally accounts have all been set up.  You
+   can see the addresses of each using these commands:
+
+   ```
+   $ solana-keygen pubkey token_mint.json
+   $ solana-keygen pubkey yes_vote_account.json
+   $ solana-keygen pubkey no_vote_account.json
+   $ solana-keygen pubkey abstain_vote_account.json
+   ```
+
+   You can begin preparing instructions for stakers to let them know how how they will
+   vote using the tokens from the token mint, by sending those tokens to one of the
+   vote tally accounts.
+
+
+3. Wait until the epoch in which the vote token distribution is to be collected.  Then
+   run the following command *from the directory that you ran setup_vote.sh*:
+
+   ```
+   $ ../collect_stakes.sh
+   ```
+
+   The resulting stake distribution list will be stored in stakes.csv.  You can make your
+   stakers aware of this file and allow them time to analyze it and alert you to any
+   inaccuracies they may believe are in this file.  There should be no issues, but it's
+   best to give stake a chance to ensure that they agree with the vote token distribution.
+   This mirrors the established SIMD voting process.
+
+4. Wait until the epoch in which voting is to start.  Then distribute vote tokens using
+   the stake distribution file that was gathered in step 3, by running the following
+   command *from the directory that you ran setup_vote.sh and collect_stakes.sh in*:
+
+   ```
+   $ ../distribute_vote_tokens.sh
+   ```
+
+5. Alert your voters that the vote has started.  Make sure they understand how to find their
    vote tokens (they will be in their stake account withdraw authority wallet, and have
    a token mint that matches the mint that was created by the script).
 
-5. If you want to see a tally of the votes at any time, you can use commands like:
+6. If you want to see a tally of the votes at any time, you can use commands like:
 
    ```
    $ spl-token -u $RPC_URL balance --owner yes_vote_account.json token_mint.json
    ```
 
-6. When the vote is over, you can freeze the vote tally accounts so that no more votes
+7. When the vote is over, you can freeze the vote tally accounts so that no more votes
    can be cast:
 
    ```

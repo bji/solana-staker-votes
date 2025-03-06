@@ -153,46 +153,6 @@ echo
 spl-token create-token -u $rpc_url --fee-payer $fee_payer --mint-authority $fee_payer --decimals 0 --enable-freeze token_mint.json
 
 echo
-echo "Capturing stakers and their stake weights ..."
-
-# Fetch current epoch
-EPOCH=$((`solana -u $rpc_url slot`/432000))
-
-# If epoch could not be fetched, exit with an error
-if [ -z "$EPOCH" ]; then
-    echo "ERROR: Failed to detect current epoch"
-    exit 1
-fi
-
-# Fetch all stake accounts for a given vote account
-# Then filter out stake accounts with activationEpoch == $EPOCH or deactivationEpoch != $EPOCH
-# (Explanation: We do not want stake accounts with activationEpoch == $EPOCH; these are stake accounts that
-#  are currently activating and thus don't count as active stake.  And we also do not want stake accounts with
-#  deactivationEpoch < $EPOCH, because those are stake accounts that were once active but have since been
-#  deactivated and are thus not active stake.  Note that if deactivationEpoch == $EPOCH, that's fine, because
-#  that means that the stake is currently active but is deactivating.  That stake still gets to vote because it
-#  was active at the time that the vote tabulation was made.)
-# Then for each unique withdrawer, sum the account balances
-declare -A withdrawer_stakes
-while read withdrawer; do
-    read stake
-    withdrawer_stakes[$withdrawer]=$((${withdrawer_stakes[$withdrawer]}+$stake))
-done < <(
-solana -u $rpc_url stakes --output=json "$vote_account" |
-    jq -r ".[]|select(.activationEpoch<$EPOCH)|select(.deactivationEpoch==null or .deactivationEpoch==$EPOCH)|.withdrawer,.accountBalance"
-)
-
-# Print out the withdrawer balances in the form expected by solana-tokens, then sort the result so that the
-# ordering is deterministic
-echo "recipient,amount" > stakes.csv
-for key in ${!withdrawer_stakes[@]}; do
-    echo "$key,${withdrawer_stakes[$key]}"
-done | sort >> stakes.csv
-
-# Sum up all the lamports in stakes.csv and mint that many vote tokens
-TOTAL_LAMPORTS=`grep -v "recipient,amount" stakes.csv | awk -F "," '{ sum += $2 } END { print sum }'`
-
-echo
 echo "Creating associated token accounts for the vote tally accounts"
 echo
 
@@ -201,39 +161,9 @@ spl-token create-account --owner ./no_vote_account.json --fee-payer $fee_payer -
 spl-token create-account --owner ./abstain_vote_account.json --fee-payer $fee_payer -u $rpc_url ./token_mint.json
 
 echo
-echo "Minting $TOTAL_LAMPORTS vote tokens"
-
-spl-token create-account --owner $fee_payer --fee-payer $fee_payer -u $rpc_url ./token_mint.json
-# Not sure why, but have to wait for tx to finalize here
-SIGNATURE=`spl-token mint -u $rpc_url --fee-payer $fee_payer --mint-authority $fee_payer --recipient-owner $fee_payer ./token_mint.json $TOTAL_LAMPORTS | grep Signature | awk '{ print $2 }'`
-while true; do
-    if [ `solana -u $rpc_url confirm $SIGNATURE` = "Finalized" ]; then
-        break
-    fi
-    echo "Waiting for tx $SIGNATURE to be finalized"
-    sleep 1
-done
-
-# Detect the token account that the tokens were just minted into.  spl tools are just so hokey.
-TOKEN_SOURCE_ADDRESS=`spl-token -u d address --token ./token_mint.json --owner $fee_payer --verbose | grep "^Associated" | awk '{ print $4 }'`
-
-echo
-echo "Distributing vote tokens from $TOKEN_SOURCE_ADDRESS"
-echo
-
-# Now distribute the tokens
-solana-tokens distribute-spl-tokens -u $rpc_url --fee-payer $fee_payer --db-path ./solana-tokens.db --input-csv ./stakes.csv -o ./transaction_log.txt --from $TOKEN_SOURCE_ADDRESS --owner $fee_payer
-
-echo
-echo
-echo
-
-echo "Votes are now set up.  The vote token mint is token_mint.json."
-echo
-echo "A total of $TOTAL_LAMPORTS vote tokens were distributed."
+echo "The vote accounts are now set up.  The vote token mint is token_mint.json."
 echo
 echo "Stakers may vote by sending their tokens to one of:"
 echo "  Yes     -- yes_vote_account.json"
 echo "  No      -- no_vote_account.json"
 echo "  Abstain -- abstain_vote_account.json"
-echo
