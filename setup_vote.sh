@@ -43,16 +43,6 @@ while true; do
     fi
 done
 
-vote_account=
-while [ -z "$vote_account" ]; do
-    echo
-    echo "What is the vote account pubkey for the vote account for which voting"
-    echo "is being set up?"
-    echo
-    echo -n "Vote account pubkey? "
-    read vote_account
-done
-
 echo "What RPC server should be used?  For testing purposes, you could use"
 echo "'d' for devnet or 't' for testnet, or even 'l' if you are running"
 echo "your own development cluster.  Or you could specify a custom RPC URL"

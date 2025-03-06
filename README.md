@@ -54,7 +54,7 @@ You must have the solana command line installed.
    $ solana-keygen pubkey abstain_vote_account.json
    ```
 
-   You can begin preparing instructions for stakers to let them know how how they will
+   You can begin preparing instructions for stakers to let them know how they will
    vote using the tokens from the token mint, by sending those tokens to one of the
    vote tally accounts.
 
